@@ -42,34 +42,32 @@ public class Context : DbContext
                     .With(x => x.Stores, new List<Store>())
                     .With(x => x.Products, new List<Product>())
                     .Create();
-
+    
                 category.Stores = fixture
                     .Build<Store>()
                     .Without(x => x.Categories)
                     .CreateMany(quantityComplexity).ToList();
                 
-
+    
                 for (int j = 0; j < quantityComplexity; j++)
                 {
                     category.Products.Add(CreateLargeProduct(category));
                 }
-
+    
                 Categories.Add(category);
             }
         }
-
+    
         SaveChanges();
     }
 
     protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
     {
         base.OnConfiguring(optionsBuilder);
-
-        var x = (_serviceProvider.GetRequiredService<SecondLevelCacheInterceptor>());
         
         optionsBuilder
             .UseSqlite(@"Data Source=C:\Users\13pne\RiderProjects\Ef-Cache\Ef-Cache\xxxxx.db")
-            .AddInterceptors(_serviceProvider.GetRequiredService<SecondLevelCacheInterceptor>())
+            .AddInterceptors(_serviceProvider.GetService<SecondLevelCacheInterceptor>())
             ;
     }
     
